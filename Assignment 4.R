@@ -3,7 +3,7 @@
 library(dplyr)
 
 #Setting working directory
-setwd("C:\\Users\\charg\\Documents\\MBiotech\\Biomed Comm\\Assignment 4")
+setwd("/Users/dannima/Desktop/MBiotech/MSC2011/Assignment/")
 
 #Read ufo file
 read <- read.csv("ufo_subset.csv")
@@ -17,9 +17,14 @@ new.data <- filter(read, country != "" & shape != "")
 datetime <- as.Date(new.data$datetime)
 date_posted <- as.Date(new.data$date.posted)
 #Whats wrong with the format above???? I converted to date, but I don't have to do anything else
+#' Comment by Danni: you may also use the as.POSIXct() function so that R will 
+#' recognize the dates in the POSIX standard format. 
 
 #Remove sightings from NUFORC
 new.data2 <- new.data[!grepl("NUFORC", new.data$comments), ]
+new.data2 <- new.data[!grepl("HOAX", new.data$comments), ] # Edit by Danni: you may also consider filtering out comments that contained "HOAX".
+#' Comment by Danni: another way to complete these steps is through pipe lining, 
+#' you may consider using the filter() function to remove sightings. 
 
 #Adding column report_delay to display difference in days between date of sighting and reported
 #Converting dates from character to dates again
@@ -30,7 +35,9 @@ new.data3 <- new.data2 %>%
   mutate(reported_delay = days_difference)
 
 #Filtering the rows where the sighting was reported before it happened
-new.data4 <- filter(new.data3, reported_delay > 0) 
+new.data4 <- filter(new.data3, reported_delay >= 0) 
+#' Edit by Danni: I changed > to >= here to include scenarios where the report was 
+#' done on same date of the sighting.
 
 #Making table with avg report_delay per country
 new.data5 <- new.data4 %>%
@@ -56,3 +63,9 @@ new.data4$duration..seconds.[new.data4$duration..seconds. > 1432.5] <- NA
 #Histogram of seconds
 hist(log(new.data4$duration..seconds.), xlab = "Seconds", main = "Log of Duration of sightings in 
      seconds")
+
+#' Comments by Danni: Hi Sharjeel, your code followed a consistent and organized 
+#' structure with detailed comments. After running your code, the code worked as 
+#' anticipated with no error messages. A minor suggestion would be instead of 
+#' creating a new object every time you perform a task, you could have a sequence
+#' of multiple operations through pipe lining. Great work overall!
